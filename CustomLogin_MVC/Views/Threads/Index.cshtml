@@ -1,0 +1,774 @@
+﻿@model IEnumerable<CustomLogin_MVC.Models.Thread>
+    @using CustomLogin_MVC.Models;
+@using System.Data.Entity;
+@using System.Text.RegularExpressions;
+@using System.Xml;
+
+@{
+    ViewBag.Title = "All Questions";
+    var allModels = (DbSet<UserModel>)ViewBag.allModels;
+}
+<style>
+  
+table { 
+  color: #333;
+  font-family: Helvetica, Arial, sans-serif;
+  width: 640px;
+  table-layout:fixed;
+  /* Table reset stuff */
+  border-collapse: collapse;  border-spacing: 0px;
+}
+tr{
+    border:thin;
+}
+		
+td, th {  border: 0 none; height: 30px; }
+			
+th {
+  /* Gradient Background */
+	background: linear-gradient(#333 0%,#444 100%);
+	color: #FFF; font-weight: bold;
+	height: 40px;
+}
+	
+        
+	
+td { background: #FAFAFA; text-align: center; }
+
+/* Zebra Stripe Rows */
+		
+tr:nth-child(even) td { background: #FDFDFD; } 
+tr:nth-child(odd) td { background: #fffbec; }
+
+/* First-child blank cells! */
+tr td:first-child, tr th:first-child { 
+	background: none; 
+	
+	font-weight: bold;
+	
+	width: 80px; 
+}
+
+/* Add border-radius to specific cells! */
+tr:first-child th:nth-child(2) { 
+  border-radius: 5px 0 0 0; 
+} 
+td:nth-child(2) td:last-child { 
+ border-radius: 125px 0 0 125px; 
+ 
+}
+tr:first-child th:last-child { 
+  border-radius: 0 5px 0 0; 
+}
+</style>
+<style>
+    .morecontent span {
+        display: none;
+    }
+
+    .morelink {
+        display: block;
+    }
+</style>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    
+<script src="../Scripts/jquery.signalR-2.2.0.js"></script>
+<script src="../signalr/hubs"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // Configure/customize these variables.
+        var showChar = 70;  // How many characters are shown by default
+        var ellipsestext = "...";
+        var moretext = "Show more";
+        var lesstext = "Show less";
+
+
+        $('.more').each(function () {
+            var content = $(this).html();
+
+            if (content.length > showChar) {
+
+                var c = content.substr(0, showChar);
+                var h = content.substr(showChar, content.length - showChar);
+
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+
+                $(this).html(html);
+            }
+
+        });
+
+        $(".morelink").click(function () {
+            if ($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $(this).parent().prev().toggle();
+            $(this).prev().toggle();
+            return false;
+        });
+    });
+
+
+    $(function () {
+        //var proxy = $.connection.notiHub;
+        var postsCount = 0;
+       $.connection.notiHub.client.receiveNotification = function (message) {
+           if (window.Notification && Notification.permission !== "denied") {
+               Notification.requestPermission(function (status) {  // status is "granted", if accepted by user
+                   var n = new Notification(postsCount+' Unread Thread(s) Available', {
+                       body: '',
+                       icon: '/images/cfd.jpg', // optional
+
+                   });
+                   n.onclick = function (event) {
+                       window.location.href = '@Url.Action("Index", "Threads")';
+                       n.close();
+                   };
+                   setTimeout(n.close(), 4000);
+               });
+           }
+            $("#container").html(++postsCount+" " +message);
+            $("#container").slideDown(1000);
+            //setTimeout('$("#container").slideUp(2000);', 6000);
+        };
+
+        $.connection.hub.start();
+    });
+    $("#solvedChk").change(function () {
+       
+        if($("#solvedChk").prop('checked')==true)
+        {
+            
+            $("#solchk").show(1000);
+        }
+        else
+        {
+            
+            $("#solchk").hide(2000);
+        }
+    });
+    $("#CatFilter").change(function () {
+        console.log("Event happened");
+        var projType = $('#CatFilter').val();
+        switch(projType)
+        {
+            case "Android":
+                $("tr.Android").show(1000);
+                $("tr.Windows").hide(1000);
+                $("tr.Web").hide(1000);
+                $("tr.Bot").hide(1000);
+                $("tr.Extension").hide(1000);
+                $("tr.Other").hide(1000);
+                
+                break;
+            case "Windows":
+                $("tr.Android").hide(1000);
+                $("tr.Windows").show(1000);
+                $("tr.Web").hide(1000);
+                $("tr.Bot").hide(1000);
+                $("tr.Extension").hide(1000);
+                $("tr.Other").hide(1000);
+                break;
+            case "Web":
+                $("tr.Android").hide(1000);
+                $("tr.Windows").hide(1000);
+                $("tr.Web").show(1000);
+                $("tr.Bot").hide(1000);
+                $("tr.Extension").hide(1000);
+                $("tr.Other").hide(1000);
+                break;
+            case "Bot":
+                $("tr.Android").hide(1000);
+                $("tr.Windows").hide(1000);
+                $("tr.Web").hide(1000);
+                $("tr.Bot").show(1000);
+                $("tr.Extension").hide(1000);
+                $("tr.Other").hide(1000);
+                break;
+            case "Extension":
+                $("tr.Android").hide(1000);
+                $("tr.Windows").hide(1000);
+                $("tr.Web").hide(1000);
+                $("tr.Bot").hide(1000);
+                $("tr.Extension").show(1000);
+                $("tr.Other").hide(1000);
+                break;
+            case "Other":
+                $("tr.Android").hide(1000);
+                $("tr.Windows").hide(1000);
+                $("tr.Web").hide(1000);
+                $("tr.Bot").hide(1000);
+                $("tr.Extension").hide(1000);
+                $("tr.Other").show(1000);
+                break;
+            case "":
+                $("tr.Android").show(1000);
+                $("tr.Windows").show(1000);
+                $("tr.Web").show(1000);
+                $("tr.Bot").show(1000);
+                $("tr.Extension").show(1000);
+                $("tr.Other").show(1000);
+                break;
+            }
+    });
+
+</script>
+<script type="text/javascript">
+
+			function DropDown(el) {
+				this.dd = el;
+				this.placeholder = this.dd.children('span');
+				this.opts = this.dd.find('ul.dropdown > li');
+				this.val = '';
+				this.index = -1;
+				this.initEvents();
+			}
+			DropDown.prototype = {
+				initEvents : function() {
+					var obj = this;
+
+					obj.dd.on('click', function(event){
+						$(this).toggleClass('active');
+						return false;
+					});
+
+					obj.opts.on('click',function(){
+						var opt = $(this);
+						obj.val = opt.text();
+						obj.index = opt.index();
+						obj.placeholder.text(obj.val);
+					});
+				},
+				getValue : function() {
+					return this.val;
+				},
+				getIndex : function() {
+					return this.index;
+				}
+			}
+
+			$(function() {
+
+				var dd = new DropDown( $('#dd') );
+
+				$(document).click(function() {
+					// all dropdowns
+					$('.wrapper-dropdown-3').removeClass('active');
+				});
+
+			});
+
+</script>
+
+}
+<style>
+    .notificationBaloon {
+        border: 2px solid #ff6a00;
+        padding: 6px;
+        background-color: #ffd800;
+        text-align: center;
+        font-weight: bold;
+        width: 300px;
+        position: absolute;
+        display: none;
+    }
+    .curve
+    {
+    border-radius: 125px 125px 125px 125px; 
+    }
+    .curve1
+    {
+    border-radius: 125px 0 0 125px; 
+    }
+
+    .form-group input[type="checkbox"] {
+    display: none;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span {
+    width: 20px;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span:first-child {
+    display: none;
+}
+.form-group input[type="checkbox"] + .btn-group > label span:last-child {
+    display: inline-block;   
+}
+
+.form-group input[type="checkbox"]:checked + .btn-group > label span:first-child {
+    display: inline-block;
+}
+.form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
+    display: none;   
+}
+
+
+</style>
+<style>
+    .wrapper-dropdown-3 {
+    /* Size and position */
+    position: relative;
+    width: 200px;
+    margin: 0 auto;
+    padding: 10px;
+
+    /* Styles */
+    background: #fff;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 1px 1px rgba(50,50,50,0.1);
+    cursor: pointer;
+    outline: none;
+
+    /* Font settings */
+    font-weight: bold;
+    color: #8AA8BD;
+}
+
+.wrapper-dropdown-3:after {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    margin-top: -3px;
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: #8aa8bd transparent;
+}
+
+.wrapper-dropdown-3 .dropdown {
+  /* Size & position */
+    position: absolute;
+    top: 140%;
+    left: 0;
+    right: 0;
+
+    /* Styles */
+    background: white;
+    border-radius: inherit;
+    border: 1px solid rgba(0,0,0,0.17);
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    font-weight: normal;
+    -webkit-transition: all 0.5s ease-in;
+    -moz-transition: all 0.5s ease-in;
+    -ms-transition: all 0.5s ease-in;
+    -o-transition: all 0.5s ease-in;
+    transition: all 0.5s ease-in;
+    list-style: none;
+
+    /* Hiding */
+    opacity: 0;
+    pointer-events: none;
+}
+
+.wrapper-dropdown-3 .dropdown:after {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: 100%;
+    right: 15px;
+    border-width: 0 6px 6px 6px;
+    border-style: solid;
+    border-color: #fff transparent;    
+}
+
+.wrapper-dropdown-3 .dropdown:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: 100%;
+    right: 13px;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.1) transparent;    
+}
+
+.wrapper-dropdown-3 .dropdown option a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #8aa8bd;
+    border-bottom: 1px solid #e6e8ea;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,1);
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.wrapper-dropdown-3 .dropdown option i {
+    float: right;
+    color: inherit;
+}
+
+.wrapper-dropdown-3 .dropdown option:first-of-type a {
+    border-radius: 7px 7px 0 0;
+}
+
+.wrapper-dropdown-3 .dropdown option:last-of-type a {
+    border: none;
+    border-radius: 0 0 7px 7px;
+}
+
+/* Hover state */
+
+.wrapper-dropdown-3 .dropdown option:hover a {
+    background: #f3f8f8;
+}
+
+/* Active state */
+
+.wrapper-dropdown-3.active .dropdown {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* No CSS3 support */
+
+.no-opacity       .wrapper-dropdown-3 .dropdown,
+.no-pointerevents .wrapper-dropdown-3 .dropdown {
+    display: none;
+    opacity: 1; /* If opacity support but no pointer-events support */
+    pointer-events: auto; /* If pointer-events support but no pointer-events support */
+}
+
+.no-opacity       .wrapper-dropdown-3.active .dropdown,
+.no-pointerevents .wrapper-dropdown-3.active .dropdown {
+    display: block;
+}
+.aParent div {
+  float: right;
+  clear: none; 
+}
+
+</style>
+<style>
+    .morecontent span {
+        display: none;
+    }
+
+    .morelink {
+        display: block;
+    }
+</style>
+
+
+
+@Html.ActionLink(" ", "Index", "Threads", htmlAttributes: new { @class = "notificationBaloon", @id = "container" })
+
+    <h2>Questions</h2>
+<div class="text-right aParent">
+  
+        
+    <div class="[ form-group ]" style="margin-left:10px">
+        <input type="checkbox" checked="checked" name="fancy-checkbox-success"  id="solvedChk" autocomplete="off" />
+        <div class="[ btn-group ]">
+            <label for="solvedChk" class="[ btn btn-success ]">
+                <span class="[ glyphicon glyphicon-ok ]"></span>
+                <span> </span>
+            </label>
+            <label for="fancy-checkbox-success" class="[ btn btn-default active ]">
+                Show Solved
+            </label>
+        </div>
+    </div>
+
+    <div>
+        @Html.DropDownList("CatFilter", new SelectList(Enum.GetValues(typeof(ProjectType))), "All Categories", new { @class = "wrapper-dropdown-3 text-right" })
+       
+    </div>
+</div>
+
+    @{
+        var results = Model.OrderByDescending(x => x.updatedTime).ToList();
+        
+        var solvedResults = results.Where(x => x.solved == true);
+        var unsolvedResults = results.Where(x => x.solved == false);
+        CustomLogin_MVCContext db = new CustomLogin_MVCContext();
+    }
+<br/>
+<h2>Not Solved</h2>
+
+<table class="table table-condensed table-responsive">
+
+    @foreach (var item in unsolvedResults)
+    {
+        var replythreadcount = db.Replies.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
+        var seenlist = db.Seens.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
+
+        <tr class=@item.ThreadType>
+            <td style="align-items:center;vertical-align:middle">
+                @{
+                   
+
+                        <div style="align-items:center;vertical-align:middle" class="[ form-group ]">
+                            <input type="checkbox" disabled="disabled" name="fancy-checkbox-success" class="replyAnswer" autocomplete="off" />
+                            <div class="[ btn-group ]">
+                                <label class="[ btn btn-success ]">
+                                    <span class="[ glyphicon glyphicon-ok ]"></span>
+                                    <span> </span>
+                                </label>
+
+                            </div>
+                        </div>
+                        <label>Not Solved</label>
+                    
+
+                }
+            </td>
+
+            <td class="curve1 text-left  " style="align-items:center;width:90px;vertical-align:middle ">
+
+                @{
+                    if (item.ThreadType == "Windows")
+                    {
+                        <img src="~/Images/windows.png" height="50" width="50" />
+                    }
+                    else if (item.ThreadType == "Web")
+                    {
+                        <img src="~/Images/web.png" height="50" width="50" />
+                    }
+                    else if (item.ThreadType == "Android")
+                    {
+                        <img src="~/Images/android.png" height="50" width="50" />
+                    }
+                    else if (item.ThreadType == "Bot")
+                    {
+                        <img src="~/Images/bot.png" height="50" width="50" />
+                    }
+                    else if (item.ThreadType == "Extension")
+                    {
+                        <img src="~/Images/extension.png" height="50" width="50" />
+                    }
+                    else if (item.ThreadType == "Other")
+                    {
+                        <img src="~/Images/others.png" height="50" width="50" />
+                    }
+
+                }
+
+
+            </td>
+
+          
+
+            <td>
+                <div class="text-left">
+                    @{
+                        if (Request.IsAuthenticated & seenlist < 1)
+                        {
+                            <strong>
+                                @Html.ActionLink(item.Threadtitle, "../Replies/ShowReplies", new { threadId = item.ThreadId },htmlAttributes: new { @class = "more" })
+                            </strong>
+                        }
+                        else
+                        {<p>
+                        @Html.ActionLink(item.Threadtitle, "../Replies/ShowReplies", new { threadId = item.ThreadId }, htmlAttributes: new { @class = "more" })
+                    </p>
+                        }
+                    
+
+                    }
+                </div >
+                
+                <div class="text-right" style="vertical-align:bottom">
+                    @{
+                      
+                           if (replythreadcount == 1)
+                           {
+                            <label>@replythreadcount Answer</label>
+                           }
+                           else
+                           {
+                            <label>@replythreadcount Answers</label>
+                           }
+                    
+
+                           var timeDiff = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - item.ThreadTime).TotalMinutes);
+                           if (timeDiff < 59)
+                           {
+                            <p>Posted @timeDiff minutes ago</p>
+                           
+                        }
+                        else
+                        {
+                            <p>Posted @item.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
+
+                        }
+                        try
+                        {
+                            var ThreadUser = allModels.Single(x => x.Name == item.User);
+                            <label>@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
+                        }
+                        catch (Exception ex)
+                        {
+                            <label>@item.User</label>
+                        }
+
+                       
+                    }
+                </div>
+               
+
+
+            </td>
+
+        </tr>
+     }
+</table>
+
+<hr/>
+<div id="solchk">
+    <h2>Solved</h2>
+
+
+    <table class="table table-condensed table-responsive">
+
+        @foreach (var item in solvedResults)
+        {
+            var replythreadcount = db.Replies.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
+            var seenlist = db.Seens.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
+
+            <tr class=@item.ThreadType>
+                <td style="align-items:center;vertical-align:middle">
+                    @{
+                        
+                            <div style="vertical-align:central" class="[ form-group ]">
+                                <input type="checkbox" disabled="disabled" checked="checked" name="fancy-checkbox-success" class="replyAnswer" autocomplete="off" />
+                                <div class="[ btn-group ]">
+                                    <label class="[ btn btn-success ]">
+                                        <span class="[ glyphicon glyphicon-ok ]"></span>
+                                        <span> </span>
+                                    </label>
+
+                                </div>
+                            </div>
+                            <label>Solved</label>
+                        
+                    }
+                </td>
+
+                <td class="curve1 text-left  " style="align-items:center;width:90px;vertical-align:middle ">
+
+                    @{
+                        if (item.ThreadType == "Windows")
+                        {
+                            <img src="~/Images/windows.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Web")
+                        {
+                            <img src="~/Images/web.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Android")
+                        {
+                            <img src="~/Images/android.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Bot")
+                        {
+                            <img src="~/Images/bot.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Extension")
+                        {
+                            <img src="~/Images/extension.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Other")
+                        {
+                            <img src="~/Images/others.png" height="40" width="40" />
+                        }
+
+                    }
+
+
+                </td>
+
+                @*<td class="curve"  style="width:125px">
+
+                        <label>
+                            @Html.DisplayFor(modelItem => item.User)
+                        </label>
+
+
+                    </td>*@
+
+
+                <td>
+                    <div class="text-left">
+                        @{
+                            if (Request.IsAuthenticated & seenlist < 1)
+                            {
+                                <strong>
+                                    @Html.ActionLink(item.Threadtitle, "../Replies/ShowReplies", new { threadId = item.ThreadId }, htmlAttributes: new { @class = "more" })
+                                </strong>
+                            }
+                            else
+                            {<p>
+                            @Html.ActionLink(item.Threadtitle, "../Replies/ShowReplies", new { threadId = item.ThreadId }, htmlAttributes: new { @class = "more" })
+                        </p>
+                            }
+
+                            //string newThreadText= Regex.Replace(item.ThreadText, @"<img\s[^>]*>(?:\s*?</img>)?", "", RegexOptions.IgnoreCase);
+
+                            //Regex regex = new Regex("(<.*?>\\s*)+", RegexOptions.Singleline);
+                            //string resultText = regex.Replace(newThreadText, " ").Trim();
+
+                            @*<p class="more"> @Html.Raw(resultText)</p>*@
+
+                        }
+                    </div>
+
+                    <div class="text-right" style="vertical-align:bottom">
+                        @{
+                            <label>@replythreadcount Answers</label>
+                            var timeDiff = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - item.ThreadTime).TotalMinutes);
+                            if (timeDiff < 59)
+                            {
+                                <p>Posted @timeDiff minutes ago</p>
+
+                            }
+                            else
+                            {
+                                <p>Posted @item.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
+
+                            }
+                            try
+                            {
+                                var ThreadUser = allModels.Single(x => x.Name == item.User);
+                                <label>@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
+                            }
+                            catch (Exception ex)
+                            {
+                                <label>@item.User</label>
+                            }
+                        }
+                    </div>
+
+
+                </td>
+
+            </tr>
+
+
+
+                            }
+    </table>
+
+
+</div>
+
+
+

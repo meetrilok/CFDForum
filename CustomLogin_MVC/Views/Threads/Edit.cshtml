@@ -1,0 +1,67 @@
+﻿@model CustomLogin_MVC.Models.Thread
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit Question</h2>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="@Url.Content("~/content/javascript/ckeditor/ckeditor.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/content/javascript/ckeditor/adapters/jquery.js")"></script>
+    <script type="text/javascript">
+	window.onload = function()
+	{
+	    CKEDITOR.replace('ThreadText');
+	};
+    </script>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+       @Html.HiddenFor(model => model.ThreadId)
+        <hr/>
+        <table class="table-condensed table-responsive">
+
+            <tr class="form-group">
+                <td align="right"><label>Question in single statement</label></td>
+
+                <td class="col-md-10">
+                    @Html.EditorFor(model => model.Threadtitle, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Threadtitle, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+
+            <tr class="form-group">
+                <td align="right"><label>Detailed Question</label></td>
+                <td class="col-md-10">
+                    @Html.EditorFor(model => model.ThreadText, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ThreadText, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+
+           
+
+            <tr class="form-group">
+                <td></td>
+                <td>
+                    <div class="col-md-10 text-left">
+                        <input type="submit" value="Update Question" class="btn btn-primary btn-md" />
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to Question", "../Replies/ShowReplies", new { threadId = Model.ThreadId })
+</div>
+
+

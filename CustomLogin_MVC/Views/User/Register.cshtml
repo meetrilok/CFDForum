@@ -1,0 +1,57 @@
+﻿@model CustomLogin_MVC.Models.UserModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+<style>
+    table {
+    table-layout: auto;
+    border-collapse: collapse;
+    
+}
+table td {
+    width:1%;
+    white-space: nowrap;
+    
+}
+table td.absorbing-column {
+    width: 1%;
+}
+</style>
+@using (Html.BeginForm())
+{
+    <h2 >Register</h2>
+
+    @Html.ValidationSummary(true, "Registeration Failed, fields.");
+    <table class="table-condensed table-responsive" >
+        <tr >
+            
+            <td class="control-label col-md-2">@Html.LabelFor(u => u.Name)</td>
+            <td style="width:150px">
+                @Html.EditorFor(u => u.Name, new { htmlAttributes = new { @class = "form-control" } }) @Html.ValidationMessageFor(u => u.Name)
+               
+            </td>
+            </tr>
+        <tr>
+            <td class="control-label col-md-2">@Html.LabelFor(u => u.Email)</td>
+            <td style="width:150px">
+                @Html.EditorFor(u => u.Email, new { htmlAttributes = new { @class = "form-control" } })@Html.ValidationMessageFor(u => u.Email)
+                
+            </td>
+            </tr>
+        <tr>
+            <td class="control-label col-md-2">@Html.LabelFor(u => u.Password)</td>
+            <td style="width:150px">
+                @Html.EditorFor(u => u.Password, new { htmlAttributes = new { @class = "form-control" } })@Html.ValidationMessageFor(u => u.Password)
+                
+            </td>
+            </tr>
+        <tr>
+            <td class="control-label col-md-2"></td>
+            <td style="width:150px">
+                <input class="btn btn-primary btn-md" type="submit" value="Register" />
+            </td>
+            
+        </tr>
+    </table>
+}

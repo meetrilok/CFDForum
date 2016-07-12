@@ -1,0 +1,62 @@
+﻿@using CustomLogin_MVC.Models;
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CFD Discussion Forum</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+               
+            </div>
+            <div class="navbar-collapse collapse">
+               
+                @if (Request.IsAuthenticated)
+                {
+                    CustomLogin_MVCContext db = new CustomLogin_MVCContext();
+                    UserModel um = db.UserModels.Single(x => x.Email == User.Identity.Name);
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            @Html.ActionLink("Hello " + um.Name, "!", "Index", "Manage", htmlAttributes: new { title = "Manage" })
+                          @*@Html.Encode(User.Identity.Name)*@
+
+                        </li>
+                        <li>@Html.ActionLink("Log Out", "Logout", "User")</li>
+                    </ul>
+                }
+                else
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            @Html.ActionLink("Register", "Register", "User")
+                        </li>
+                        <li>
+                            @Html.ActionLink("Log In", "Login", "User")
+                        </li>
+                    </ul>
+
+                }
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Microsoft</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

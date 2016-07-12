@@ -1,0 +1,49 @@
+﻿@model CustomLogin_MVC.Models.UserModel
+@{
+    ViewBag.Title = "LogIn";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 ">
+            <div class="form-login">
+                <h2>LogIn</h2>
+                <br/>
+                 <h4>Welcome </h4>
+                <div class="wrapper">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.ValidationSummary(true, "Login Failed, check details");
+                        <table class="table-condensed table-responsive">
+                            <tr>
+                               
+                                <td class="control-label col-md-2">@Html.LabelFor(u => u.Email)</td>
+                                <td >
+                                    @Html.EditorFor(u => u.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(u => u.Email)
+                                </td>
+                                <tr>
+                                <td class="control-label col-md-2">@Html.LabelFor(u => u.Password)</td>
+                                <td >
+                                    @Html.EditorFor(u => u.Password, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(u => u.Password)
+                                </td>
+                                    </tr>
+                            <tr>
+                                <td class="control-label col-md-2"></td>
+                                <td>
+                                    <input class="btn btn-primary btn-md" type="submit" value="Log In" />
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+     

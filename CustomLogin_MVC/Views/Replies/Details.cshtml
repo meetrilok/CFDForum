@@ -1,0 +1,50 @@
+﻿@model CustomLogin_MVC.Models.Reply
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Reply</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Thread.User)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Thread.User)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReplyUser)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ReplyUser)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReplyText)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ReplyText)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReplyTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ReplyTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ReplyId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

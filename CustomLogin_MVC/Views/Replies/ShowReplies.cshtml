@@ -1,0 +1,593 @@
+﻿@model CustomLogin_MVC.Models.Reply
+@using CustomLogin_MVC.Models;
+@using System.Data.Entity;
+@using System.Text.RegularExpressions;
+@using System.Xml;
+@{
+    ViewBag.Title = "ShowReplies";
+    List<Reply> replies = (List<Reply>)ViewBag.replies;
+    var thread = (Thread)ViewBag.currThread;
+    var allModels = (DbSet<UserModel>)ViewBag.allModels;
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript" src="@Url.Content("~/content/javascript/ckeditor/ckeditor.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/content/javascript/ckeditor/adapters/jquery.js")"></script>
+<script src="../Scripts/jquery.signalR-2.2.0.js"></script>
+<script src="../signalr/hubs"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            // Configure/customize these variables.
+            var showChar = 70;  // How many characters are shown by default
+            var ellipsestext = "...";
+            var moretext = "Show more";
+            var lesstext = "Show less";
+
+
+            $('.more').each(function () {
+                var content = $(this).html();
+
+                if (content.length > showChar) {
+
+                    var c = content.substr(0, showChar);
+                    var h = content.substr(showChar, content.length - showChar);
+
+                    var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" style="font-size:14px" class="morelink">' + moretext + '</a></span>';
+
+                    $(this).html(html);
+                }
+
+            });
+
+            $(".morelink").click(function () {
+                if ($(this).hasClass("less")) {
+                    $(this).removeClass("less");
+                    $(this).html(moretext);
+                } else {
+                    $(this).addClass("less");
+                    $(this).html(lesstext);
+                }
+                $(this).parent().prev().toggle();
+                $(this).prev().toggle();
+                return false;
+            });
+        });
+
+
+        $("#thread_solved").change(function () {
+            @{
+                CustomLogin_MVCContext db = new CustomLogin_MVCContext();
+                Thread t1 = db.Threads.Find(thread.ThreadId);
+        }
+
+
+            var url = '@Url.Action("solved", "threads", new { tid = t1.ThreadId })';
+            $.post(url);
+
+        });
+        $(".replyAnswer").change(function () {
+            
+            var name = $(this).attr("id");
+            
+            var url = '@Url.Action("Answered", "Replies")';
+            $.post(url, { rid: name });
+            
+            
+        });
+
+        
+       
+    </script>
+
+
+
+<script type="text/javascript">
+    $(function () {
+        //var proxy = $.connection.notiHub;
+        var postsCount = 0;
+       $.connection.notiHub.client.receiveNotification = function (message) {
+           if (window.Notification && Notification.permission !== "denied") {
+               Notification.requestPermission(function (status) {  // status is "granted", if accepted by user
+                   var n = new Notification(postsCount+' Unread Thread(s) Available', {
+                       body: '',
+                       icon: '/images/cfd.jpg', // optional
+
+                   });
+                   n.onclick = function (event) {
+                       window.location.href = '@Url.Action("Index", "Threads")';
+                       n.close();
+                   };
+                   setTimeout(n.close(), 4000);
+               });
+           }
+            $("#container").html(++postsCount+" " +message);
+            $("#container").slideDown(2000);
+            //setTimeout('$("#container").slideUp(2000);', 6000);
+        };
+
+        $.connection.hub.start();
+    });
+
+
+</script>
+<script type="text/javascript">
+	window.onload = function()
+	{
+	    CKEDITOR.replace('ReplyText');
+	};
+</script>
+
+
+
+}
+<style>
+#sb::-webkit-scrollbar{
+width:8px;
+background-color:#ffffff;
+}
+   
+#sb::-webkit-scrollbar-thumb{
+background-color:#333333;
+}
+#sb::-webkit-scrollbar-thumb:hover{
+background-color:#999999;
+border:1px solid #ffffff;
+}
+#sb::-webkit-scrollbar-thumb:active{
+background-color:#666666;
+border:1px solid #ffffff;
+}
+#sb::-webkit-scrollbar-track{
+border:1px white solid;
+-webkit-box-shadow:0 0 2px white inset;
+}
+    .morecontent span {
+        display: none;
+    }
+
+    .morelink {
+        display: block;
+    }
+    img{
+      max-width:100%;
+      height:auto;
+      object-fit:scale-down;
+       display:compact;
+    }
+    td #chkcell #chcell
+    {
+        width:150px;
+        max-width:150px;
+    }
+    @@media only screen and (max-width:1800px) 
+        {
+         #chklbl{
+        display:block;
+    }
+    #chkcell{
+        width:150px;
+    }
+        }
+@@media only screen and (max-width:600px)
+{
+    #chklbl{
+        display:none;
+    }
+    #chkcell{
+        width:50px;
+    }
+    #solLbl
+    {
+        display:none;
+    }
+
+    }
+     
+}
+   
+</style>
+<style>
+    .notificationBaloon {
+        border: 2px solid #ff6a00;
+        padding: 6px;
+        background-color: #ffd800;
+        text-align: center;
+        font-weight: bold;
+        width: 300px;
+        position: absolute;
+        display: none;
+    }
+   
+.form-group input[type="checkbox"] {
+    display: none;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span {
+    width: 20px;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span:first-child {
+    display: none;
+}
+.form-group input[type="checkbox"] + .btn-group > label span:last-child {
+    display: inline-block;   
+}
+
+.form-group input[type="checkbox"]:checked + .btn-group > label span:first-child {
+    display: inline-block;
+}
+.form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
+    display: none;   
+}
+
+</style>
+
+@*<div class="notificationBaloon" id="container">
+    </div>*@
+
+@Html.ActionLink(" ", "Index", "Threads", htmlAttributes: new { @class = "notificationBaloon", @id = "container" })
+
+
+
+
+<h2 class="more">@thread.Threadtitle</h2>
+<table class="table table-responsive">
+    <tr >
+
+        <td  class="text-center " id="chkcell" style="vertical-align:central" >
+            @{
+                if (thread.ThreadType == "Windows")
+                {
+                    <img src="~/Images/windows.png" style="align-items:center" height="40" width="40" />
+                }
+                else if (thread.ThreadType == "Web")
+                {
+                    <img src="~/Images/web.png" height="40" width="40" />
+                }
+                else if (thread.ThreadType == "Android")
+                {
+                    <img src="~/Images/android.png" style="align-items:center" height="50" width="50" />
+                }
+                else if (thread.ThreadType == "Bot")
+                {
+                    <img src="~/Images/bot.png" height="40" width="40" />
+                }
+                else if (thread.ThreadType == "Extension")
+                {
+                    <img src="~/Images/extension.png" height="40" width="40" />
+                }
+                else if (thread.ThreadType == "Other")
+                {
+                    <img src="~/Images/others.png" height="40" width="40" />
+                }
+
+            }
+             @{
+                 if (thread.solved == true)
+                 {
+
+                    <div class="[ form-group ]">
+                        <input type="checkbox" checked="checked" name="fancy-checkbox-success" class="replyAnswer" id="thread_solved" autocomplete="off" />
+                        <div class="[ btn-group ]">
+                            <label for="thread_solved" class="[ btn btn-success ]">
+                                <span class="[ glyphicon glyphicon-ok ]"></span>
+                                <span> </span>
+                            </label>
+                            <label id="solLbl" for="fancy-checkbox-success" class="[ btn btn-default active ]">
+                                solved
+                            </label>
+                        </div>
+                    </div>
+
+
+                 }
+                 else
+                 {
+                    <div class="[ form-group ]">
+                        <input type="checkbox" name="fancy-checkbox-success" class="replyAnswer" id="thread_solved" autocomplete="off" />
+                        <div class="[ btn-group ]">
+                            <label for="thread_solved" class="[ btn btn-success ]">
+                                <span class="[ glyphicon glyphicon-ok ]"></span>
+                                <span> </span>
+                            </label>
+                            <label id="solLbl" for="fancy-checkbox-success" class="[ btn btn-default active ]">
+                                solved
+                            </label>
+                        </div>
+                    </div>
+
+
+                 }
+            }
+
+
+        </td>
+
+        <td style="text-align: left;background:none;max-width:700px">
+            <div  style="word-wrap:break-word">
+                @{
+                    Regex Tre = new Regex(@"<img[^>]+\>");
+                    string[] ThtText = Tre.Split(thread.ThreadText);
+
+                    var Timgtags = Regex.Match(thread.ThreadText, @"<img[^>]+\>");
+                    List<string> Tsrcs = new List<string>();
+                    for (int p = 0; p < Timgtags.Groups.Count; p++)
+                    {
+                        if (Timgtags.Groups[p].Value != null)
+                        {
+
+                            string Tcleaned = new Regex("style=\"[^\"]*\"").Replace(Timgtags.Groups[p].Value, "");
+
+                            Tsrcs.Add(Tcleaned);
+                        }
+
+                    }
+
+                    int Ti = 0;
+
+                    foreach (string p in ThtText)
+                    {
+                        var mystring = new HtmlString(p);
+                        @mystring
+                        try
+                        {
+                            if (Tsrcs[Ti] != null)
+                            {
+                                var Timage = new HtmlString(Tsrcs[Ti++]);
+                                @Timage
+                            }
+
+                        }
+                        catch { }
+                    }
+                }
+
+            </div>
+           @{
+
+               if (Request.IsAuthenticated)
+               {
+                   UserModel um1 = ViewBag.usermodel;
+                   if (um1.Name == thread.User)
+                   {
+                    <div class="text-right" style="vertical-align:text-bottom">
+                        @Html.ActionLink("Edit", "../Threads/Edit", new { id = thread.ThreadId }) |
+                        @Html.ActionLink("Delete", "../Threads/Delete", new { id = thread.ThreadId })
+                    </div>
+                   }
+
+               }
+        }
+
+            <div class="text-right" style="vertical-align:bottom">
+                <p style="word-wrap:break-word">
+                    @{
+                        var timeDiff1 = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - thread.ThreadTime).TotalMinutes);
+                        if (timeDiff1 < 59)
+                        {
+                        <p>Posted @timeDiff1 minutes ago</p>
+                        }
+                        else
+                        {
+                            <p>Posted @thread.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
+                        }
+                    }
+                    </p>
+               
+                @{
+                    try
+                    {
+                        var ThreadUser = allModels.Single(x => x.Name == thread.User);
+                        <label>@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
+                    }
+                    catch (Exception ex)
+                    {
+                        <label>@thread.User</label>
+                    }
+                }
+                
+            </div>
+        </td>
+
+    </tr>
+</table>
+ 
+@{
+    if (replies.Count == 1)
+    {
+        <h2>@replies.Count Answer</h2>
+    }
+    else
+    {
+        <h2>@replies.Count Answers</h2>
+    }
+}
+
+<table class="table table-responsive">
+    @{
+            foreach (var reply in replies)
+            {
+                <tr class="border_bottom" style="height:80px">
+                    <td class="text-center " id="chkcell" style="vertical-align:central">
+                        
+                        @{
+                            if (reply.Answer == true)
+                            {
+
+                                <div class="[ form-group ]" style="vertical-align:central">
+                                    <input type="checkbox" checked="checked" name="fancy-checkbox-success" class="replyAnswer" id=@reply.ReplyId autocomplete="off" />
+                                    <div class="[ btn-group ]">
+                                        <label for=@reply.ReplyId class="[ btn btn-success ]">
+                                            <span class="[ glyphicon glyphicon-ok ]"></span>
+                                            <span> </span>
+                                        </label>
+                                        <label id="chklbl" for="fancy-checkbox-success" class="[ btn btn-default active ]">
+                                            Answer
+                                        </label>
+                                    </div>
+                                </div>
+                          
+                            }
+                            else
+                            {
+                                <div class="[ form-group ] " style="vertical-align:central">
+                                    <input type="checkbox" name="fancy-checkbox-success" class="replyAnswer" id=@reply.ReplyId autocomplete="off" />
+                                    <div class="[ btn-group ]">
+                                        <label for=@reply.ReplyId class="[ btn btn-success ]">
+                                            <span class="[ glyphicon glyphicon-ok ]"></span>
+                                            <span> </span>
+                                        </label>
+                                        <label id="chklbl" for="fancy-checkbox-success" class="[ btn btn-default active ]">
+                                            Answer
+                                        </label>
+                                    </div>
+                                </div>
+                               
+                            }
+                        }
+                    </td>
+                   
+                    <td  style="text-align: left;max-width:700px">
+                        <div style="word-wrap:break-word;max-height:500px;overflow-y:scroll;" id="sb" class="text-left scrollbar" > 
+                        @{
+                            Regex re = new Regex(@"<img[^>]+\>");
+                            string[] htText = re.Split(reply.ReplyText);
+
+                            var imgtags = Regex.Match(reply.ReplyText, @"<img[^>]+\>");
+                            List<string> srcs = new List<string>();
+                            for(int p=0;p<imgtags.Groups.Count;p++)
+                            {
+                                if (imgtags.Groups[p].Value != null)
+                                {
+
+                                    string cleaned = new Regex("style=\"[^\"]*\"").Replace(imgtags.Groups[p].Value, "");
+
+                                    srcs.Add(cleaned);
+                                }
+
+                            }
+
+                            int i = 0;
+                            string ReplyAppended = "";
+                            foreach (string p in htText)
+                            {
+                                ReplyAppended = ReplyAppended + p;
+                                @*var str = new HtmlString(p);
+                                @str*@
+                                try
+                                {
+                                    if (srcs[i] != null)
+                                    {
+                                        ReplyAppended = ReplyAppended + srcs[i++];
+                                        @*var Rimage = new HtmlString(srcs[i++]);
+                                        @Rimage*@
+                                }
+
+                            }
+                            catch { }
+                        }
+                       
+                        var finalreply = new HtmlString(ReplyAppended);
+                        @finalreply
+                        }
+
+                        </div>
+                        <div class="text-right" style="vertical-align:bottom">
+                            
+                            
+                            @{
+                                if (Request.IsAuthenticated)
+                                {
+                                    
+                                    UserModel um2 = ViewBag.usermodel;
+                                    if (um2.Name == reply.ReplyUser)
+                                    {
+                                        <div class="text-right" style="vertical-align:text-bottom">
+                                            @Html.ActionLink("Edit", "../Replies/Edit", new { id = reply.ReplyId }) |
+                                            @Html.ActionLink("Delete", "Delete", new { id = reply.ReplyId })
+                                        </div>
+                                    }
+                                }
+
+                                var timeDiff = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - reply.ReplyTime).TotalMinutes);
+                                if (timeDiff < 59)
+                                {
+                                    <div >Replied @timeDiff minutes ago</div>
+                                }
+                                else
+                                {
+                                    <div>Replied @reply.ReplyTime.ToString("MMM dd,yy 'at' HH:mm")</div>
+                                }
+                            }
+                           
+                            @{ 
+                                if(reply.AuthReply==true)
+                                {
+                                    var user1 = allModels.Single(x => x.Name == reply.ReplyUser);
+                                    <label>@reply.ReplyUser&#40;@user1.ReplyCount&#41;</label>
+                                }
+                                else
+                                {
+                                 <label>@reply.ReplyUser</label>  
+                                }
+                            }
+                        
+                        </div>
+                    </td>
+                 </tr>
+                
+            }
+
+    }
+</table>
+
+<h3>Your Answer</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    
+        <table class="table-responsive table-condensed" >
+            <tr>
+                
+                <td style="background:none;text-align: left;">
+                    @if (Request.IsAuthenticated)
+                    {
+                        var usermodel = (UserModel)ViewBag.usermodel;
+                       <b><i>@usermodel.Name</i></b> <br />
+                    }
+                    else
+                    {
+                        @Html.EditorFor(model => model.ReplyUser, new { htmlAttributes = new { @class = "form-control", placeholder = "Your Name Here" } })
+                    }
+                </td>
+            </tr>
+            <tr>
+               
+                <td>
+                    <p style="font-style:italic">Image can be posted using links of images hosted at https://imgsafe.org/ or any other image hosting site.</p>
+                </td>
+            </tr>
+            <tr>
+                
+                <td style="background:none">
+                    @Html.TextAreaFor(model => model.ReplyText, new {   htmlAttributes = new { @class = "form-control" } })
+                </td>
+            </tr>
+            <tr>
+                
+                <td style="text-align: left;background:none">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <input type="submit" value="Post Your Answer" style="margin-left:-15px" class="btn btn-primary btn-md" />
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+      
+}
+

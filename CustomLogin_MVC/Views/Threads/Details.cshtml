@@ -1,0 +1,50 @@
+﻿@model CustomLogin_MVC.Models.Thread
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Thread</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.User)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Threadtitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Threadtitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ThreadText)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ThreadText)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ThreadTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ThreadTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ThreadId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

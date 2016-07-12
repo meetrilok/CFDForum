@@ -1,0 +1,56 @@
+﻿@model CustomLogin_MVC.Models.Reply
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript" src="@Url.Content("~/content/javascript/ckeditor/ckeditor.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/content/javascript/ckeditor/adapters/jquery.js")"></script>
+    <script type="text/javascript">
+	window.onload = function()
+	{
+	    CKEDITOR.replace('ReplyText');
+	};
+    </script>
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+       @Html.HiddenFor(model => model.ReplyId)
+        <hr />
+        <table class="table-condensed table-responsive">
+           
+            <tr class="form-group">
+                <td align="right">
+                <label>Answer
+                    </label></td>
+                <td class="col-md-10">
+                    @Html.EditorFor(model => model.ReplyText, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ReplyText, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+
+            <tr class="form-group">
+                <td></td>
+                <td >
+                    <div class="col-md-10 text-left">
+                        <input type="submit" value="Update Reply" class="btn btn-primary btn-md" />
+                    </div>
+</td>
+            </tr>
+        </table>
+
+       
+    </div>
+}
+<div>
+    @Html.ActionLink("Back to Question", "../Replies/ShowReplies", new { threadId = Model.ThreadId })
+</div>
+
+
