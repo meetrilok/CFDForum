@@ -15,7 +15,7 @@ namespace CustomLogin_MVC.Models
         public string ReplyUser { get; set; }
         [DataType(DataType.MultilineText)]
         [AllowHtml]
-        [UIHint("tinymce_full")]
+        
         [Required(ErrorMessage ="Comment field should not be empty")]
         public string ReplyText { get; set; }
         public System.DateTime ReplyTime { get; set; }

@@ -287,7 +287,7 @@ tr:first-child th:last-child {
     }
     .curve1
     {
-    border-radius: 125px 0 0 125px; 
+    border-radius: 0 0 0 75px; 
     }
 
     .form-group input[type="checkbox"] {
@@ -502,22 +502,59 @@ tr:first-child th:last-child {
         CustomLogin_MVCContext db = new CustomLogin_MVCContext();
     }
 <br/>
+<style>
+    .lnsp {
+        line-height: 0.7;
+    }
+    label.lnsp{
+        font-size:12px;
+    }
+    p.lnsp
+    {
+        font-size:12px;
+    }
+</style>
 
 <h2>Not Solved</h2>
 
-<table class="table table-condensed table-responsive">
+<table style="border-top:none"  class="table table-condensed table-responsive">
 
     @foreach (var item in unsolvedResults)
     {
         var replythreadcount = db.Replies.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
         var seenlist = db.Seens.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
 
-        <tr class=@item.ThreadType>
-            <td style="align-items:center;vertical-align:middle">
+        <tr  class=@item.ThreadType>
+            <td  style="align-items:center;vertical-align:middle">
                 @{
                    
+                        if (item.ThreadType == "Windows")
+                        {
+                            <img src="~/Images/windows.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Web")
+                        {
+                            <img src="~/Images/web.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Android")
+                        {
+                            <img src="~/Images/android.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Bot")
+                        {
+                            <img src="~/Images/bot.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Extension")
+                        {
+                            <img src="~/Images/extension.png" height="40" width="40" />
+                        }
+                        else if (item.ThreadType == "Other")
+                        {
+                            <img src="~/Images/others.png" height="40" width="40" />
+                        }
 
-                        <div style="align-items:center;vertical-align:middle" class="[ form-group ]">
+                    
+                   <div style="align-items:center;vertical-align:middle" class="[ form-group ]">
                             <input type="checkbox" disabled="disabled" name="fancy-checkbox-success" class="replyAnswer" autocomplete="off" />
                             <div class="[ btn-group ]">
                                 <label class="[ btn btn-success ]">
@@ -527,48 +564,11 @@ tr:first-child th:last-child {
 
                             </div>
                         </div>
-                        <label>Not Solved</label>
-                    
-
+                      
                 }
             </td>
 
-            <td class="curve1 text-left  " style="align-items:center;width:90px;vertical-align:middle ">
-
-                @{
-                    if (item.ThreadType == "Windows")
-                    {
-                        <img src="~/Images/windows.png" height="50" width="50" />
-                    }
-                    else if (item.ThreadType == "Web")
-                    {
-                        <img src="~/Images/web.png" height="50" width="50" />
-                    }
-                    else if (item.ThreadType == "Android")
-                    {
-                        <img src="~/Images/android.png" height="50" width="50" />
-                    }
-                    else if (item.ThreadType == "Bot")
-                    {
-                        <img src="~/Images/bot.png" height="50" width="50" />
-                    }
-                    else if (item.ThreadType == "Extension")
-                    {
-                        <img src="~/Images/extension.png" height="50" width="50" />
-                    }
-                    else if (item.ThreadType == "Other")
-                    {
-                        <img src="~/Images/others.png" height="50" width="50" />
-                    }
-
-                }
-
-
-            </td>
-
-          
-
-            <td>
+            <td class="curve1">
                 <div class="text-left">
                     @{
                         if (Request.IsAuthenticated & seenlist < 1)
@@ -587,38 +587,38 @@ tr:first-child th:last-child {
                     }
                 </div >
                 
-                <div class="text-right" style="vertical-align:bottom">
+                <div class="text-right lnsp" style="vertical-align:bottom">
                     @{
                       
                            if (replythreadcount == 1)
                            {
-                            <label>@replythreadcount Answer</label>
+                            <label class="lnsp">@replythreadcount Answer</label>
                            }
                            else
                            {
-                            <label>@replythreadcount Answers</label>
+                            <label class="lnsp">@replythreadcount Answers</label>
                            }
                     
 
                            var timeDiff = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - item.ThreadTime).TotalMinutes);
                            if (timeDiff < 59)
                            {
-                            <p>Posted @timeDiff minutes ago</p>
+                            <p class="lnsp">Posted @timeDiff minutes ago</p>
                            
                         }
                         else
                         {
-                            <p>Posted @item.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
+                            <p class="lnsp">Posted @item.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
 
                         }
                         try
                         {
                             var ThreadUser = allModels.Single(x => x.Name == item.User);
-                            <label>@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
+                            <label class="lnsp">@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
                         }
                         catch (Exception ex)
                         {
-                            <label>@item.User</label>
+                            <label class="lnsp">@item.User</label>
                         }
 
                        
@@ -645,27 +645,8 @@ tr:first-child th:last-child {
             var replythreadcount = db.Replies.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
             var seenlist = db.Seens.Where(x => x.ThreadId == item.ThreadId).ToList().Count;
 
-            <tr class=@item.ThreadType>
-                <td style="align-items:center;vertical-align:middle">
-                    @{
-                        
-                            <div style="vertical-align:central" class="[ form-group ]">
-                                <input type="checkbox" disabled="disabled" checked="checked" name="fancy-checkbox-success" class="replyAnswer" autocomplete="off" />
-                                <div class="[ btn-group ]">
-                                    <label class="[ btn btn-success ]">
-                                        <span class="[ glyphicon glyphicon-ok ]"></span>
-                                        <span> </span>
-                                    </label>
-
-                                </div>
-                            </div>
-                            <label>Solved</label>
-                        
-                    }
-                </td>
-
-                <td class="curve1 text-left  " style="align-items:center;width:90px;vertical-align:middle ">
-
+            <tr style="border-top:none" class=@item.ThreadType>
+                <td  style="align-items:center;vertical-align:middle">
                     @{
                         if (item.ThreadType == "Windows")
                         {
@@ -692,10 +673,30 @@ tr:first-child th:last-child {
                             <img src="~/Images/others.png" height="40" width="40" />
                         }
 
+                            <div style="vertical-align:central" class="[ form-group ]">
+                                <input type="checkbox" disabled="disabled" checked="checked" name="fancy-checkbox-success" class="replyAnswer" autocomplete="off" />
+                                <div class="[ btn-group ]">
+                                    <label class="[ btn btn-success ]">
+                                        <span class="[ glyphicon glyphicon-ok ]"></span>
+                                        <span> </span>
+                                    </label>
+
+                                </div>
+                            </div>
+                            @*<label>Solved</label>*@
+                        
+                    }
+                </td>
+
+                @*<td class="curve1 text-left  " style="align-items:center;width:50px;vertical-align:middle ">
+
+                    @{
+                       
+
                     }
 
 
-                </td>
+                </td>*@
 
                 @*<td class="curve"  style="width:125px">
 
@@ -707,7 +708,7 @@ tr:first-child th:last-child {
                     </td>*@
 
 
-                <td>
+                <td class="curve1">
                     <div class="text-left">
                         @{
                             if (Request.IsAuthenticated & seenlist < 1)
@@ -731,29 +732,29 @@ tr:first-child th:last-child {
 
                         }
                     </div>
-
-                    <div class="text-right" style="vertical-align:bottom">
+                    
+                    <div class="text-right lnsp" style="vertical-align:bottom">
                         @{
-                            <label>@replythreadcount Answers</label>
+                            <label  class="lnsp">@replythreadcount Answers</label>
                             var timeDiff = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - item.ThreadTime).TotalMinutes);
                             if (timeDiff < 59)
                             {
-                                <p>Posted @timeDiff minutes ago</p>
+                                <p class="lnsp">Posted @timeDiff minutes ago</p>
 
                             }
                             else
                             {
-                                <p>Posted @item.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
+                                <p class="lnsp">Posted @item.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
 
                             }
                             try
                             {
                                 var ThreadUser = allModels.Single(x => x.Name == item.User);
-                                <label>@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
+                                <label class="lnsp">@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
                             }
                             catch (Exception ex)
                             {
-                                <label>@item.User</label>
+                                <label class="lnsp">@item.User</label>
                             }
                         }
                     </div>

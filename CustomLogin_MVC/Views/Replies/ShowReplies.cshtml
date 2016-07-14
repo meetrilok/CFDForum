@@ -82,7 +82,19 @@
         
        
     </script>
+<style>
+    .lnsp {
+        line-height: 0.7;
+    }
 
+    label.lnsp {
+        font-size: 12px;
+    }
+
+    p.lnsp {
+        font-size: 12px;
+    }
+</style>
 
 
 <script type="text/javascript">
@@ -363,17 +375,17 @@ border:1px white solid;
                }
         }
 
-            <div class="text-right" style="vertical-align:bottom">
+            <div class="text-right lnsp" style="vertical-align:bottom">
                 <p style="word-wrap:break-word">
                     @{
                         var timeDiff1 = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - thread.ThreadTime).TotalMinutes);
                         if (timeDiff1 < 59)
                         {
-                        <p>Posted @timeDiff1 minutes ago</p>
+                        <p class="lnsp">Posted @timeDiff1 minutes ago</p>
                         }
                         else
                         {
-                            <p>Posted @thread.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
+                            <p class="lnsp">Posted @thread.ThreadTime.ToString("MMM dd,yy 'at' HH:mm")</p>
                         }
                     }
                     </p>
@@ -382,11 +394,11 @@ border:1px white solid;
                     try
                     {
                         var ThreadUser = allModels.Single(x => x.Name == thread.User);
-                        <label>@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
+                        <label class="lnsp">@ThreadUser.Name&#40;@ThreadUser.ReplyCount&#41;</label>
                     }
                     catch (Exception ex)
                     {
-                        <label>@thread.User</label>
+                        <label class="lnsp">@thread.User</label>
                     }
                 }
                 
@@ -516,11 +528,11 @@ border:1px white solid;
                                 var timeDiff = Math.Abs((int)(DateTime.Now.AddHours(5).AddMinutes(30) - reply.ReplyTime).TotalMinutes);
                                 if (timeDiff < 59)
                                 {
-                                    <div >Replied @timeDiff minutes ago</div>
+                                    <div class="lnsp">Replied @timeDiff minutes ago</div>
                                 }
                                 else
                                 {
-                                    <div>Replied @reply.ReplyTime.ToString("MMM dd,yy 'at' HH:mm")</div>
+                                    <div class="lnsp">Replied @reply.ReplyTime.ToString("MMM dd,yy 'at' HH:mm")</div>
                                 }
                             }
                            
@@ -528,11 +540,11 @@ border:1px white solid;
                                 if(reply.AuthReply==true)
                                 {
                                     var user1 = allModels.Single(x => x.Name == reply.ReplyUser);
-                                    <label>@reply.ReplyUser&#40;@user1.ReplyCount&#41;</label>
+                                    <label class="lnsp">@reply.ReplyUser&#40;@user1.ReplyCount&#41;</label>
                                 }
                                 else
                                 {
-                                 <label>@reply.ReplyUser</label>  
+                                 <label class="lnsp">@reply.ReplyUser</label>  
                                 }
                             }
                         
